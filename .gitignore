@@ -5,3 +5,5 @@ __pycache__/
 .pytest_cache/
 TODO
 shell_script.sh
+build/
+dist/
