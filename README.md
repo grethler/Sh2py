@@ -23,4 +23,4 @@ sh2py.base64_encode()
 ```
 
 # License
-Released under the [GNU GPLv3](./LICENSE)
+Released under the [GPL-3.0](./LICENSE)

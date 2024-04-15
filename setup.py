@@ -10,4 +10,7 @@ setup(
     setup_requires=['pytest-runner'],
     tests_require=['pytest'],
     test_suite='tests',
+    license='GPL-3.0',
+    url='https://github.com/grethler/sh2py',
+    download_url='https://github.com/grethler/Sh2py/archive/refs/tags/0.1.0.tar.gz'
 )
