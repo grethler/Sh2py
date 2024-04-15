@@ -1,5 +1,6 @@
 import os
 import base64
+import textwrap
 from dataclasses import dataclass
 
 
@@ -12,7 +13,7 @@ class Sh2Py:
     when sharing it with others. \n
     """
     def __init__(self, path: str) -> None:
-        self.python_script: str = self.__parse(path)
+        self.python_script: str = open(path, "rb").read()
         self.custom_output_path: str = ""
         self.output_name: str = ""
         if not self.output_name:
@@ -20,24 +21,6 @@ class Sh2Py:
         else:
             self.filename: str = f"{self.custom_output_path}{self.output_name}"
         self.shell_script: str = "#!/bin/bash\n"
-
-    def __parse(self, path: str) -> str:
-        """
-        Parses the python script.
-
-        Parameters
-        ----------
-        path : str
-            The path to the python script.
-
-        Returns
-        -------
-        str
-            The python script as a binary string.
-        """
-
-        with open(path, "rb") as file:
-            return file.read()
 
     def __fileout(self) -> None:
         """
@@ -51,21 +34,12 @@ class Sh2Py:
         Encodes the python script into base64.
         """
         b64: str = base64.b64encode(self.python_script).decode()
-        self.shell_script += f"b64={b64}"
+        if len(b64) > 64:
+            b64 = textwrap.wrap(b64, width=64)
+            self.shell_script += f"b64='{b64[0]}'\n"
+            for i in range(1, len(b64)):
+                self.shell_script += f"b64+='{b64[i]}'\n"
+        else:
+            self.shell_script += f"b64={b64}"
         self.shell_script += f"\necho $b64 | base64 -d > {self.filename}"
         self.__fileout()
-
-
-
-def test():
-    s2p = Sh2Py(os.path.join(os.getcwd(), "tests/_test.py"))
-    # for custom output path use:
-    # s2p.custom_output_path = "path/to/output/"
-    #
-    # for custom output filename use:
-    # s2p.output_name = "filename.py"
-    s2p.base64_encode()
-    print(s2p.shell_script)
-
-if __name__ == "__main__":
-    test()
